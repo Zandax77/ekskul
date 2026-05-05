@@ -25,7 +25,7 @@ class StaffAuthController extends Controller
         $credentials = $request->validate([
             'nip' => ['required', 'string'],
             'password' => ['required', 'string'],
-            'role' => ['required', 'in:pelatih,pembina'],
+            'role' => ['required', 'in:pelatih,pembina,wali_kelas'],
         ]);
 
         $guard = $credentials['role'];
@@ -51,6 +51,8 @@ class StaffAuthController extends Controller
             Auth::guard('pelatih')->logout();
         } elseif (Auth::guard('pembina')->check()) {
             Auth::guard('pembina')->logout();
+        } elseif (Auth::guard('wali_kelas')->check()) {
+            Auth::guard('wali_kelas')->logout();
         }
 
         $request->session()->invalidate();

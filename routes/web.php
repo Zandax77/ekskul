@@ -8,6 +8,7 @@ use App\Http\Controllers\PelatihController;
 use App\Http\Controllers\PembinaController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminAuthController;
+use App\Http\Controllers\WaliKelasController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -28,6 +29,11 @@ Route::post('/staff/logout', [StaffAuthController::class, 'logout'])->name('staf
 Route::get('/admin/login', [AdminAuthController::class, 'login'])->name('admin.login');
 Route::post('/admin/login', [AdminAuthController::class, 'authenticate']);
 
+// Wali Kelas Auth
+Route::get('/wali-kelas/login', [WaliKelasController::class, 'showLogin'])->name('wali_kelas.login');
+Route::post('/wali-kelas/login', [WaliKelasController::class, 'login']);
+Route::post('/wali-kelas/logout', [WaliKelasController::class, 'logout'])->name('wali_kelas.logout');
+
 // Admin Routes (using default web guard)
 Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
@@ -46,6 +52,13 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::post('/siswa', [AdminController::class, 'siswaStore'])->name('siswa.store');
     Route::get('/siswa/template', [AdminController::class, 'siswaTemplate'])->name('siswa.template');
     Route::post('/siswa/import', [AdminController::class, 'siswaImport'])->name('siswa.import');
+
+    Route::get('/wali-kelas', [AdminController::class, 'waliKelasIndex'])->name('wali-kelas.index');
+    Route::post('/wali-kelas', [AdminController::class, 'waliKelasStore'])->name('wali-kelas.store');
+    Route::get('/wali-kelas/template', [AdminController::class, 'waliKelasTemplate'])->name('wali-kelas.template');
+    Route::post('/wali-kelas/import', [AdminController::class, 'waliKelasImport'])->name('wali-kelas.import');
+    Route::post('/wali-kelas/{wali_kelas}/reset', [AdminController::class, 'waliKelasReset'])->name('wali-kelas.reset');
+    Route::delete('/wali-kelas/{wali_kelas}', [AdminController::class, 'waliKelasDestroy'])->name('wali-kelas.destroy');
 });
 
 Route::middleware('auth:siswa')->group(function () {
@@ -77,4 +90,9 @@ Route::middleware('auth:pembina')->prefix('pembina')->name('pembina.')->group(fu
     Route::get('/ekskul/{ekskul}/report', [PembinaController::class, 'show'])->name('report');
     Route::get('/ekskul/{ekskul}/report/pdf', [PembinaController::class, 'exportPDF'])->name('report.pdf');
     Route::post('/ekskul/{ekskul}/prestasi', [PembinaController::class, 'storePrestasi'])->name('prestasi.store');
+});
+
+// Wali Kelas Routes
+Route::middleware('auth:wali_kelas')->prefix('wali-kelas')->name('wali_kelas.')->group(function () {
+    Route::get('/dashboard', [WaliKelasController::class, 'dashboard'])->name('dashboard');
 });

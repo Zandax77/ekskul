@@ -9,11 +9,14 @@ use App\Models\Pembina;
 use App\Models\Pelatih;
 use App\Models\User;
 use App\Models\Prestasi;
+use App\Models\WaliKelas;
 use Illuminate\Support\Facades\DB;
 use App\Imports\SiswaImport;
 use App\Imports\StaffImport;
+use App\Imports\WaliKelasImport;
 use App\Exports\SiswaTemplateExport;
 use App\Exports\StaffTemplateExport;
+use App\Exports\WaliKelasTemplateExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\RedirectResponse;
@@ -31,6 +34,7 @@ class AdminController extends Controller
             'pembina' => Pembina::count(),
             'pelatih' => Pelatih::count(),
             'ekskul' => Ekskul::count(),
+            'wali_kelas' => WaliKelas::count(),
         ];
         
         // Data Grafik
@@ -242,5 +246,82 @@ class AdminController extends Controller
     public function staffTemplate()
     {
         return Excel::download(new StaffTemplateExport, 'template_staf.xlsx');
+    }
+
+    /**
+     * Manage Wali Kelas.
+     */
+    public function waliKelasIndex(): View
+    {
+        $waliKelas = WaliKelas::all();
+        return view('admin.wali_kelas.index', compact('waliKelas'));
+    }
+
+    /**
+     * Store new Wali Kelas.
+     */
+    public function waliKelasStore(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'nama' => ['required', 'string', 'max:255'],
+            'nip' => ['required', 'string', 'unique:wali_kelas,nip'],
+            'kelas' => ['required', 'string', 'unique:wali_kelas,kelas'],
+            'password' => ['required', 'string', 'min:8'],
+        ]);
+
+        WaliKelas::create([
+            'nama' => $request->nama,
+            'nip' => $request->nip,
+            'kelas' => $request->kelas,
+            'password' => Hash::make($request->password),
+        ]);
+
+        return back()->with('success', 'Wali Kelas baru berhasil ditambahkan.');
+    }
+
+    /**
+     * Import Wali Kelas from Excel.
+     */
+    public function waliKelasImport(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'file' => ['required', 'mimes:xlsx,xls,csv'],
+        ]);
+
+        try {
+            Excel::import(new WaliKelasImport, $request->file('file'));
+            return back()->with('success', 'Data wali kelas berhasil diimpor.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal mengimpor data: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Download Wali Kelas Template.
+     */
+    public function waliKelasTemplate()
+    {
+        return Excel::download(new WaliKelasTemplateExport, 'template_wali_kelas.xlsx');
+    }
+
+    /**
+     * Reset Wali Kelas Password.
+     */
+    public function waliKelasReset(WaliKelas $waliKelas): RedirectResponse
+    {
+        $waliKelas->update([
+            'password' => Hash::make('12345678')
+        ]);
+
+        return back()->with('success', 'Password wali kelas ' . $waliKelas->nama . ' berhasil direset menjadi: 12345678');
+    }
+
+    /**
+     * Delete Wali Kelas.
+     */
+    public function waliKelasDestroy(WaliKelas $waliKelas): RedirectResponse
+    {
+        $waliKelas->delete();
+        return back()->with('success', 'Data wali kelas berhasil dihapus.');
     }
 }

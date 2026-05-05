@@ -57,6 +57,11 @@ return [
             'driver' => 'session',
             'provider' => 'pelatihs',
         ],
+
+        'wali_kelas' => [
+            'driver' => 'session',
+            'provider' => 'wali_kelas',
+        ],
     ],
 
     /*
@@ -95,6 +100,11 @@ return [
         'pelatihs' => [
             'driver' => 'eloquent',
             'model' => App\Models\Pelatih::class,
+        ],
+
+        'wali_kelas' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\WaliKelas::class,
         ],
 
         // 'users' => [

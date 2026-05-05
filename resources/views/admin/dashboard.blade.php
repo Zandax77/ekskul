@@ -16,6 +16,7 @@
                         <a href="{{ route('admin.ekskul.index') }}" class="text-sm text-slate-400 hover:text-white transition-colors">Ekskul</a>
                         <a href="{{ route('admin.staff.index') }}" class="text-sm text-slate-400 hover:text-white transition-colors">Staf</a>
                         <a href="{{ route('admin.siswa.index') }}" class="text-sm text-slate-400 hover:text-white transition-colors">Siswa</a>
+                        <a href="{{ route('admin.wali-kelas.index') }}" class="text-sm text-slate-400 hover:text-white transition-colors">Wali Kelas</a>
                     </div>
                     <form action="{{ route('logout') }}" method="POST">
                         @csrf
@@ -44,6 +45,10 @@
             <div class="bg-slate-900/50 border border-white/10 rounded-3xl p-6">
                 <p class="text-xs text-slate-500 uppercase tracking-widest font-bold mb-1">Total Pelatih</p>
                 <h3 class="text-4xl font-bold text-white">{{ $stats['pelatih'] }}</h3>
+            </div>
+            <div class="bg-slate-900/50 border border-white/10 rounded-3xl p-6">
+                <p class="text-xs text-slate-500 uppercase tracking-widest font-bold mb-1">Total Wali Kelas</p>
+                <h3 class="text-4xl font-bold text-white">{{ $stats['wali_kelas'] }}</h3>
             </div>
             <div class="bg-slate-900/50 border border-white/10 rounded-3xl p-6">
                 <p class="text-xs text-slate-500 uppercase tracking-widest font-bold mb-1">Total Ekskul</p>
@@ -78,6 +83,20 @@
                     </a>
                 </div>
                 <div class="absolute -right-10 -bottom-10 h-32 w-32 rounded-full bg-emerald-600/10 blur-3xl group-hover:bg-emerald-600/20 transition-all"></div>
+            </div>
+
+            <div class="bg-gradient-to-br from-amber-600/20 to-orange-600/20 border border-white/10 rounded-3xl p-8 relative overflow-hidden group md:col-span-2 lg:col-span-1">
+                <div class="relative z-10">
+                    <h2 class="text-2xl font-bold text-white mb-4">Manajemen Wali Kelas</h2>
+                    <p class="text-slate-300 mb-6">Kelola data guru pengampu kelas. Import data secara massal dari Excel untuk mempercepat proses input.</p>
+                    <a href="{{ route('admin.wali-kelas.index') }}" class="inline-flex items-center gap-2 text-amber-400 font-bold hover:text-amber-300 transition-colors">
+                        Buka Portal Wali Kelas
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                        </svg>
+                    </a>
+                </div>
+                <div class="absolute -right-10 -bottom-10 h-32 w-32 rounded-full bg-amber-600/10 blur-3xl group-hover:bg-amber-600/20 transition-all"></div>
             </div>
         </div>
 

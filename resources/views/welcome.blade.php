@@ -102,21 +102,21 @@
                     <p class="text-slate-400 text-sm sm:text-base max-w-md mx-auto">Silakan pilih akses sesuai peran Anda di sekolah.</p>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
 
                     {{-- Siswa --}}
                     <a href="{{ route('login') }}" class="group relative rounded-3xl p-px overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1">
                         <div class="absolute inset-0 bg-gradient-to-br from-blue-500 to-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-3xl"></div>
-                        <div class="relative bg-slate-950 border border-white/10 rounded-[calc(1.5rem-1px)] p-7 sm:p-8 flex flex-col h-full group-hover:border-transparent transition-colors">
+                        <div class="relative bg-slate-950 border border-white/10 rounded-[calc(1.5rem-1px)] p-7 flex flex-col h-full group-hover:border-transparent transition-colors">
                             <div class="w-12 h-12 bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-400 mb-6 border border-blue-500/20 group-hover:bg-blue-500 group-hover:text-white transition-all duration-300">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/>
                                 </svg>
                             </div>
-                            <h3 class="text-xl font-bold text-white mb-2">Portal Siswa</h3>
-                            <p class="text-slate-400 text-sm mb-6 flex-grow leading-relaxed">Akses jadwal, daftar ekskul baru, dan lihat catatan prestasi Anda.</p>
-                            <div class="flex items-center text-blue-400 font-bold gap-1.5 text-xs uppercase tracking-wider">
-                                Masuk <svg class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <h3 class="text-lg font-bold text-white mb-2">Portal Siswa</h3>
+                            <p class="text-slate-400 text-xs mb-6 flex-grow leading-relaxed">Akses jadwal, daftar ekskul baru, dan lihat catatan prestasi Anda.</p>
+                            <div class="flex items-center text-blue-400 font-bold gap-1.5 text-[10px] uppercase tracking-wider">
+                                Masuk <svg class="w-3 h-3 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                             </div>
                         </div>
                     </a>
@@ -124,16 +124,33 @@
                     {{-- Staff --}}
                     <a href="{{ route('staff.login') }}" class="group relative rounded-3xl p-px overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1">
                         <div class="absolute inset-0 bg-gradient-to-br from-emerald-500 to-teal-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-3xl"></div>
-                        <div class="relative bg-slate-950 border border-white/10 rounded-[calc(1.5rem-1px)] p-7 sm:p-8 flex flex-col h-full group-hover:border-transparent transition-colors">
+                        <div class="relative bg-slate-950 border border-white/10 rounded-[calc(1.5rem-1px)] p-7 flex flex-col h-full group-hover:border-transparent transition-colors">
                             <div class="w-12 h-12 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-400 mb-6 border border-emerald-500/20 group-hover:bg-emerald-500 group-hover:text-white transition-all duration-300">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
                                 </svg>
                             </div>
-                            <h3 class="text-xl font-bold text-white mb-2">Portal Staff</h3>
-                            <p class="text-slate-400 text-sm mb-6 flex-grow leading-relaxed">Kelola absensi, buat laporan kegiatan, dan atur jadwal latihan ekskul.</p>
-                            <div class="flex items-center text-emerald-400 font-bold gap-1.5 text-xs uppercase tracking-wider">
-                                Masuk <svg class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <h3 class="text-lg font-bold text-white mb-2">Portal Staff</h3>
+                            <p class="text-slate-400 text-xs mb-6 flex-grow leading-relaxed">Kelola absensi, buat laporan kegiatan, dan atur jadwal latihan ekskul.</p>
+                            <div class="flex items-center text-emerald-400 font-bold gap-1.5 text-[10px] uppercase tracking-wider">
+                                Masuk <svg class="w-3 h-3 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            </div>
+                        </div>
+                    </a>
+
+                    {{-- Wali Kelas --}}
+                    <a href="{{ route('staff.login') }}" class="group relative rounded-3xl p-px overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1">
+                        <div class="absolute inset-0 bg-gradient-to-br from-amber-500 to-orange-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-3xl"></div>
+                        <div class="relative bg-slate-950 border border-white/10 rounded-[calc(1.5rem-1px)] p-7 flex flex-col h-full group-hover:border-transparent transition-colors">
+                            <div class="w-12 h-12 bg-amber-500/10 rounded-2xl flex items-center justify-center text-amber-400 mb-6 border border-amber-500/20 group-hover:bg-amber-500 group-hover:text-white transition-all duration-300">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                </svg>
+                            </div>
+                            <h3 class="text-lg font-bold text-white mb-2">Wali Kelas</h3>
+                            <p class="text-slate-400 text-xs mb-6 flex-grow leading-relaxed">Pantau rekap nilai dan perkembangan ekstrakurikuler siswa di kelas Anda.</p>
+                            <div class="flex items-center text-amber-400 font-bold gap-1.5 text-[10px] uppercase tracking-wider">
+                                Masuk <svg class="w-3 h-3 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                             </div>
                         </div>
                     </a>
@@ -141,16 +158,16 @@
                     {{-- Admin --}}
                     <a href="{{ route('admin.login') }}" class="group relative rounded-3xl p-px overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1">
                         <div class="absolute inset-0 bg-gradient-to-br from-rose-500 to-red-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-3xl"></div>
-                        <div class="relative bg-slate-950 border border-white/10 rounded-[calc(1.5rem-1px)] p-7 sm:p-8 flex flex-col h-full group-hover:border-transparent transition-colors">
+                        <div class="relative bg-slate-950 border border-white/10 rounded-[calc(1.5rem-1px)] p-7 flex flex-col h-full group-hover:border-transparent transition-colors">
                             <div class="w-12 h-12 bg-rose-500/10 rounded-2xl flex items-center justify-center text-rose-400 mb-6 border border-rose-500/20 group-hover:bg-rose-500 group-hover:text-white transition-all duration-300">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
                                 </svg>
                             </div>
-                            <h3 class="text-xl font-bold text-white mb-2">Admin Central</h3>
-                            <p class="text-slate-400 text-sm mb-6 flex-grow leading-relaxed">Kendali penuh sistem, manajemen data master, dan pengaturan kebijakan ekskul.</p>
-                            <div class="flex items-center text-rose-400 font-bold gap-1.5 text-xs uppercase tracking-wider">
-                                Masuk <svg class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <h3 class="text-lg font-bold text-white mb-2">Admin Central</h3>
+                            <p class="text-slate-400 text-xs mb-6 flex-grow leading-relaxed">Kendali penuh sistem, manajemen data master, dan pengaturan kebijakan ekskul.</p>
+                            <div class="flex items-center text-rose-400 font-bold gap-1.5 text-[10px] uppercase tracking-wider">
+                                Masuk <svg class="w-3 h-3 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                             </div>
                         </div>
                     </a>

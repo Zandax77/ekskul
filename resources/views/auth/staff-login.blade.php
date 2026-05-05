@@ -28,6 +28,7 @@
                             class="mt-1.5 block w-full rounded-xl border border-white/10 bg-slate-800/50 py-3 px-4 text-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 sm:text-sm outline-none transition-all duration-200">
                             <option value="pelatih">Pelatih (Coach)</option>
                             <option value="pembina">Pembina (Supervisor)</option>
+                            <option value="wali_kelas">Wali Kelas (Homeroom Teacher)</option>
                         </select>
                     </div>
 
