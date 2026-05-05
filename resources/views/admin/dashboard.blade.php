@@ -140,6 +140,7 @@
                     <thead>
                         <tr class="border-b border-white/10">
                             <th class="py-3 px-4 text-xs font-bold uppercase text-slate-500">Nama Ekskul</th>
+                            <th class="py-3 px-4 text-xs font-bold uppercase text-slate-500">Jumlah Peserta</th>
                             <th class="py-3 px-4 text-xs font-bold uppercase text-slate-500">Total Presensi</th>
                             <th class="py-3 px-4 text-xs font-bold uppercase text-slate-500 min-w-[200px]">Tingkat Kehadiran</th>
                         </tr>
@@ -147,18 +148,43 @@
                     <tbody class="divide-y divide-white/5">
                         @foreach($attendanceRecap as $recap)
                             @php
-                                $percentage = $recap->total_presensi > 0 ? round(($recap->total_hadir / $recap->total_presensi) * 100) : 0;
+                                $totalPotential = $recap->total_kegiatan * $recap->total_peserta;
+                                $percentage = $totalPotential > 0 ? round(($recap->total_hadir / $totalPotential) * 100) : 0;
+                                $statusColor = $percentage >= 75 ? 'emerald' : ($percentage >= 50 ? 'amber' : 'red');
                             @endphp
-                            <tr class="hover:bg-white/5 transition-colors">
-                                <td class="py-4 px-4 text-sm font-medium text-white">{{ $recap->nama }}</td>
-                                <td class="py-4 px-4 text-sm text-slate-400">{{ $recap->total_presensi }} Catatan</td>
+                            <tr class="group hover:bg-white/5 transition-all duration-300">
+                                <td class="py-4 px-4 text-sm font-medium text-white relative">
+                                    <!-- Dynamic Vertical Line -->
+                                    <div class="absolute left-0 top-2 bottom-2 w-1.5 rounded-r-full {{ $statusColor === 'emerald' ? 'bg-emerald-500 shadow-[2px_0_12px_rgba(16,185,129,0.5)]' : ($statusColor === 'amber' ? 'bg-amber-500 shadow-[2px_0_12px_rgba(245,158,11,0.5)]' : 'bg-red-500 shadow-[2px_0_12px_rgba(239,68,68,0.5)]') }}"></div>
+                                    <span class="pl-4 group-hover:pl-5 transition-all duration-300">{{ $recap->nama }}</span>
+                                </td>
+                                <td class="py-4 px-4 text-sm text-slate-400">
+                                    <div class="flex items-center gap-2">
+                                        <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                                        </svg>
+                                        {{ $recap->total_peserta }} Siswa
+                                    </div>
+                                </td>
+                                <td class="py-4 px-4 text-sm text-slate-400">
+                                    <div class="flex items-center gap-2">
+                                        <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                        </svg>
+                                        {{ $recap->total_hadir }} / {{ $recap->total_kegiatan * $recap->total_peserta }} Hadir
+                                    </div>
+                                </td>
                                 <td class="py-4 px-4">
-                                    <div class="flex items-center gap-3">
-                                        <span class="text-sm font-bold w-12 {{ $percentage >= 75 ? 'text-emerald-400' : ($percentage >= 50 ? 'text-amber-400' : 'text-red-400') }}">
-                                            {{ $percentage }}%
-                                        </span>
-                                        <div class="flex-1 h-2 bg-slate-800 rounded-full overflow-hidden">
-                                            <div class="h-full rounded-full {{ $percentage >= 75 ? 'bg-emerald-500' : ($percentage >= 50 ? 'bg-amber-500' : 'bg-red-500') }}" style="width: {{ $percentage }}%"></div>
+                                    <div class="flex items-center gap-4">
+                                        <div class="w-14">
+                                            <span class="text-lg font-black leading-none {{ $statusColor === 'emerald' ? 'text-emerald-400' : ($statusColor === 'amber' ? 'text-amber-400' : 'text-red-400') }}">
+                                                {{ $percentage }}<span class="text-[10px] ml-0.5">%</span>
+                                            </span>
+                                        </div>
+                                        <div class="flex-1 h-3 bg-slate-800 rounded-full overflow-hidden border border-white/5 shadow-inner">
+                                            <div class="h-full rounded-full {{ $statusColor === 'emerald' ? 'bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.4)]' : ($statusColor === 'amber' ? 'bg-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.4)]' : 'bg-red-500 shadow-[0_0_15px_rgba(239,68,68,0.4)]') }}" 
+                                                 style="width: {{ $percentage }}%">
+                                            </div>
                                         </div>
                                     </div>
                                 </td>
@@ -166,7 +192,7 @@
                         @endforeach
                         @if(count($attendanceRecap) === 0)
                             <tr>
-                                <td colspan="3" class="py-8 text-center text-sm text-slate-500">Belum ada data kehadiran.</td>
+                                <td colspan="4" class="py-8 text-center text-sm text-slate-500">Belum ada data kehadiran.</td>
                             </tr>
                         @endif
                     </tbody>

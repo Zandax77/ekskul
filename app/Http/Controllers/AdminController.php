@@ -51,8 +51,10 @@ class AdminController extends Controller
             ->leftJoin('presensis', 'kegiatans.id', '=', 'presensis.kegiatan_id')
             ->select(
                 'ekskuls.nama',
+                DB::raw('COUNT(DISTINCT kegiatans.id) as total_kegiatan'),
                 DB::raw('COUNT(presensis.id) as total_presensi'),
-                DB::raw('SUM(CASE WHEN presensis.status = "hadir" THEN 1 ELSE 0 END) as total_hadir')
+                DB::raw('SUM(CASE WHEN presensis.status = "hadir" THEN 1 ELSE 0 END) as total_hadir'),
+                DB::raw('(SELECT COUNT(*) FROM ikuts WHERE ekskul_id = ekskuls.id) as total_peserta')
             )
             ->groupBy('ekskuls.id', 'ekskuls.nama')
             ->get();
@@ -80,9 +82,28 @@ class AdminController extends Controller
         $request->validate([
             'nama' => ['required', 'string', 'max:255', 'unique:ekskuls,nama'],
             'deskripsi' => ['nullable', 'string'],
+            'is_wajib' => ['nullable', 'boolean'],
+            'wajib_kelas' => ['nullable', 'array'],
         ]);
 
-        Ekskul::create($request->only(['nama', 'deskripsi']));
+        $ekskul = Ekskul::create([
+            'nama' => $request->nama,
+            'deskripsi' => $request->deskripsi,
+            'is_wajib' => $request->boolean('is_wajib'),
+            'wajib_kelas' => $request->wajib_kelas ? implode(',', $request->wajib_kelas) : null,
+        ]);
+
+        if ($ekskul->is_wajib && $ekskul->wajib_kelas) {
+            $classes = explode(',', $ekskul->wajib_kelas);
+            $siswasQuery = Siswa::query();
+            $siswasQuery->where(function($q) use ($classes) {
+                foreach ($classes as $kelas) {
+                    $q->orWhere('kelas', 'LIKE', $kelas . ' %')
+                      ->orWhere('kelas', 'LIKE', $kelas . '%');
+                }
+            });
+            $ekskul->siswas()->syncWithoutDetaching($siswasQuery->pluck('id'));
+        }
 
         return back()->with('success', 'Ekskul baru berhasil ditambahkan.');
     }
@@ -110,6 +131,8 @@ class AdminController extends Controller
             'pembina_id' => ['nullable', 'exists:pembinas,id'],
             'pelatih_id' => ['nullable', 'exists:pelatihs,id'],
             'deskripsi' => ['nullable', 'string'],
+            'is_wajib' => ['nullable', 'boolean'],
+            'wajib_kelas' => ['nullable', 'array'],
         ]);
 
         // Check Pembina Limit (Max 3)
@@ -128,7 +151,25 @@ class AdminController extends Controller
             }
         }
 
-        $ekskul->update($request->only(['pembina_id', 'pelatih_id', 'deskripsi']));
+        $ekskul->update([
+            'pembina_id' => $request->pembina_id,
+            'pelatih_id' => $request->pelatih_id,
+            'deskripsi' => $request->deskripsi,
+            'is_wajib' => $request->boolean('is_wajib'),
+            'wajib_kelas' => $request->wajib_kelas ? implode(',', $request->wajib_kelas) : null,
+        ]);
+
+        if ($ekskul->is_wajib && $ekskul->wajib_kelas) {
+            $classes = explode(',', $ekskul->wajib_kelas);
+            $siswasQuery = Siswa::query();
+            $siswasQuery->where(function($q) use ($classes) {
+                foreach ($classes as $kelas) {
+                    $q->orWhere('kelas', 'LIKE', $kelas . ' %')
+                      ->orWhere('kelas', 'LIKE', $kelas . '%');
+                }
+            });
+            $ekskul->siswas()->syncWithoutDetaching($siswasQuery->pluck('id'));
+        }
 
         return back()->with('success', 'Data ekskul berhasil diperbarui.');
     }

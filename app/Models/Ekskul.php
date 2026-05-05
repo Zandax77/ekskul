@@ -11,6 +11,8 @@ class Ekskul extends Model
         'pembina_id',
         'pelatih_id',
         'deskripsi',
+        'is_wajib',
+        'wajib_kelas',
     ];
 
     public function pembina()

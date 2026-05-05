@@ -48,6 +48,23 @@
                         <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">Deskripsi (Opsional)</label>
                         <input type="text" name="deskripsi" placeholder="Penjelasan singkat tentang ekskul" class="w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-blue-500 transition-colors">
                     </div>
+                    <div class="space-y-4 md:col-span-2 bg-white/5 p-4 rounded-2xl border border-white/5">
+                        <div class="flex items-center gap-3">
+                            <input type="checkbox" name="is_wajib" value="1" id="is_wajib_new" class="w-4 h-4 bg-slate-800 border-white/10 rounded text-blue-600 focus:ring-blue-500">
+                            <label for="is_wajib_new" class="text-sm font-bold text-white">Jadikan Ekskul Wajib</label>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">Target Kelas (jika wajib)</label>
+                            <div class="flex gap-4">
+                                @foreach(['X', 'XI', 'XII'] as $kelas)
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="checkbox" name="wajib_kelas[]" value="{{ $kelas }}" class="w-4 h-4 bg-slate-800 border-white/10 rounded text-blue-600 focus:ring-blue-500">
+                                        <span class="text-sm text-slate-300">{{ $kelas }}</span>
+                                    </label>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
                     <div class="md:col-span-2 flex justify-end gap-3 mt-4">
                         <button type="button" onclick="document.getElementById('addEkskulForm').classList.add('hidden')" class="px-6 py-3 text-sm font-bold text-slate-400 hover:text-white transition-colors">Batal</button>
                         <button type="submit" class="px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded-xl transition-all">Simpan Ekskul</button>
@@ -89,9 +106,17 @@
                         @foreach($ekskuls as $ekskul)
                             <tr class="hover:bg-white/5 transition-colors">
                                 <td class="px-6 py-4">
-                                    <p class="text-sm font-bold text-white">{{ $ekskul->nama }}</p>
+                                    <div class="flex items-center gap-2">
+                                        <p class="text-sm font-bold text-white">{{ $ekskul->nama }}</p>
+                                        @if($ekskul->is_wajib)
+                                            <span class="px-2 py-0.5 bg-red-500/20 text-red-400 text-[10px] font-black uppercase rounded-md border border-red-500/20">Wajib</span>
+                                        @endif
+                                    </div>
                                     @if($ekskul->deskripsi)
                                         <p class="text-xs text-slate-500 mt-0.5 line-clamp-1">{{ $ekskul->deskripsi }}</p>
+                                    @endif
+                                    @if($ekskul->is_wajib && $ekskul->wajib_kelas)
+                                        <p class="text-[10px] text-blue-400 font-bold mt-1 uppercase tracking-tighter">Kelas: {{ $ekskul->wajib_kelas }}</p>
                                     @endif
                                 </td>
                                 <form action="{{ route('admin.ekskul.update', $ekskul) }}" method="POST">
@@ -108,14 +133,31 @@
                                         </select>
                                     </td>
                                     <td class="px-6 py-4">
-                                        <select name="pelatih_id" class="bg-slate-800 border border-white/10 rounded-lg px-3 py-2 text-xs text-slate-200 outline-none focus:border-blue-500 transition-colors w-full max-w-[200px]">
-                                            <option value="">Pilih Pelatih</option>
-                                            @foreach($pelatihs as $l)
-                                                <option value="{{ $l->id }}" {{ $ekskul->pelatih_id == $l->id ? 'selected' : '' }}>
-                                                    {{ $l->nama }} ({{ $l->ekskuls_count }}/3)
-                                                </option>
-                                            @endforeach
-                                        </select>
+                                        <div class="space-y-2">
+                                            <select name="pelatih_id" class="bg-slate-800 border border-white/10 rounded-lg px-3 py-2 text-xs text-slate-200 outline-none focus:border-blue-500 transition-colors w-full max-w-[200px]">
+                                                <option value="">Pilih Pelatih</option>
+                                                @foreach($pelatihs as $l)
+                                                    <option value="{{ $l->id }}" {{ $ekskul->pelatih_id == $l->id ? 'selected' : '' }}>
+                                                        {{ $l->nama }} ({{ $l->ekskuls_count }}/3)
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            <div class="flex flex-col gap-1.5 p-2 bg-white/5 rounded-lg border border-white/5">
+                                                <label class="flex items-center gap-2 cursor-pointer">
+                                                    <input type="checkbox" name="is_wajib" value="1" {{ $ekskul->is_wajib ? 'checked' : '' }} class="w-3 h-3 bg-slate-800 border-white/10 rounded text-blue-600 focus:ring-blue-500">
+                                                    <span class="text-[10px] font-bold text-slate-400 uppercase">Set Wajib</span>
+                                                </label>
+                                                <div class="flex gap-2">
+                                                    @php $currentClasses = explode(',', $ekskul->wajib_kelas ?? ''); @endphp
+                                                    @foreach(['X', 'XI', 'XII'] as $kelas)
+                                                        <label class="flex items-center gap-1 cursor-pointer">
+                                                            <input type="checkbox" name="wajib_kelas[]" value="{{ $kelas }}" {{ in_array($kelas, $currentClasses) ? 'checked' : '' }} class="w-3 h-3 bg-slate-800 border-white/10 rounded text-blue-600 focus:ring-blue-500">
+                                                            <span class="text-[10px] text-slate-500">{{ $kelas }}</span>
+                                                        </label>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        </div>
                                     </td>
                                     <td class="px-6 py-4 text-right flex items-center justify-end gap-3">
                                         <button type="submit" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-white/10 text-white text-xs font-bold rounded-lg transition-colors">Update</button>

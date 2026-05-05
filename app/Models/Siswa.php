@@ -8,6 +8,32 @@ use Illuminate\Notifications\Notifiable;
 class Siswa extends Authenticatable
 {
     use Notifiable;
+    
+    protected static function booted()
+    {
+        static::created(function ($siswa) {
+            if ($siswa->kelas) {
+                // Get all mandatory ekskuls
+                $mandatoryEkskuls = Ekskul::where('is_wajib', true)->get();
+                
+                foreach ($mandatoryEkskuls as $ekskul) {
+                    if ($ekskul->wajib_kelas) {
+                        $classes = explode(',', $ekskul->wajib_kelas);
+                        $isMatch = false;
+                        foreach ($classes as $kelas) {
+                            if (str_starts_with($siswa->kelas, $kelas)) {
+                                $isMatch = true;
+                                break;
+                            }
+                        }
+                        if ($isMatch) {
+                            $siswa->ekskuls()->attach($ekskul->id);
+                        }
+                    }
+                }
+            }
+        });
+    }
 
     /**
      * The attributes that are mass assignable.
