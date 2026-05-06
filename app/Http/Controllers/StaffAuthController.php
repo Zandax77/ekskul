@@ -25,7 +25,7 @@ class StaffAuthController extends Controller
         $credentials = $request->validate([
             'nip' => ['required', 'string'],
             'password' => ['required', 'string'],
-            'role' => ['required', 'in:pelatih,pembina,wali_kelas'],
+            'role' => ['required', 'in:pelatih,pembina'],
         ]);
 
         $guard = $credentials['role'];

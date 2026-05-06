@@ -139,7 +139,7 @@
                     </a>
 
                     {{-- Wali Kelas --}}
-                    <a href="{{ route('staff.login') }}" class="group relative rounded-3xl p-px overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1">
+                    <a href="{{ route('wali_kelas.login') }}" class="group relative rounded-3xl p-px overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1">
                         <div class="absolute inset-0 bg-gradient-to-br from-amber-500 to-orange-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-3xl"></div>
                         <div class="relative bg-slate-950 border border-white/10 rounded-[calc(1.5rem-1px)] p-7 flex flex-col h-full group-hover:border-transparent transition-colors">
                             <div class="w-12 h-12 bg-amber-500/10 rounded-2xl flex items-center justify-center text-amber-400 mb-6 border border-amber-500/20 group-hover:bg-amber-500 group-hover:text-white transition-all duration-300">

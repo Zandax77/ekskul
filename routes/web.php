@@ -28,6 +28,7 @@ Route::post('/staff/logout', [StaffAuthController::class, 'logout'])->name('staf
 // Admin Auth
 Route::get('/admin/login', [AdminAuthController::class, 'login'])->name('admin.login');
 Route::post('/admin/login', [AdminAuthController::class, 'authenticate']);
+Route::post('/admin/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
 
 // Wali Kelas Auth
 Route::get('/wali-kelas/login', [WaliKelasController::class, 'showLogin'])->name('wali_kelas.login');

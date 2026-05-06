@@ -18,7 +18,7 @@
                         <a href="{{ route('admin.siswa.index') }}" class="text-sm text-slate-400 hover:text-white transition-colors">Siswa</a>
                         <a href="{{ route('admin.wali-kelas.index') }}" class="text-sm text-slate-400 hover:text-white transition-colors">Wali Kelas</a>
                     </div>
-                    <form action="{{ route('logout') }}" method="POST">
+                    <form action="{{ route('admin.logout') }}" method="POST">
                         @csrf
                         <button type="submit" class="text-sm text-red-400 hover:text-red-300">Keluar</button>
                     </form>
