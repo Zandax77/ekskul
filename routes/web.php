@@ -41,6 +41,8 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     
     Route::get('/ekskul', [AdminController::class, 'ekskulIndex'])->name('ekskul.index');
     Route::post('/ekskul', [AdminController::class, 'ekskulStore'])->name('ekskul.store');
+    Route::get('/ekskul/template', [AdminController::class, 'ekskulTemplate'])->name('ekskul.template');
+    Route::post('/ekskul/import', [AdminController::class, 'ekskulImport'])->name('ekskul.import');
     Route::put('/ekskul/{ekskul}', [AdminController::class, 'ekskulUpdate'])->name('ekskul.update');
     Route::delete('/ekskul/{ekskul}', [AdminController::class, 'ekskulDestroy'])->name('ekskul.destroy');
     

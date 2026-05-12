@@ -12,10 +12,37 @@
                 <h1 class="text-2xl font-bold text-white">Kelola Ekskul</h1>
                 <p class="text-slate-400">Tambah ekskul baru atau atur penugasan pembina dan pelatih.</p>
             </div>
-            <button onclick="document.getElementById('addEkskulForm').classList.toggle('hidden')" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded-xl transition-all shadow-[0_0_20px_rgba(37,99,235,0.2)] flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                Tambah Ekskul Baru
-            </button>
+            <div class="flex items-center gap-3">
+                <button onclick="document.getElementById('importEkskulForm').classList.toggle('hidden')" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-bold rounded-xl transition-all border border-white/10 flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    Impor Ekskul
+                </button>
+                <button onclick="document.getElementById('addEkskulForm').classList.toggle('hidden')" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded-xl transition-all shadow-[0_0_20px_rgba(37,99,235,0.2)] flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    Tambah Ekskul Baru
+                </button>
+            </div>
+        </div>
+
+        <!-- Import Ekskul Form -->
+        <div id="importEkskulForm" class="hidden mb-8 animate-fade-in">
+            <div class="bg-slate-900/50 border border-white/10 rounded-3xl p-8 backdrop-blur-xl">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h3 class="text-lg font-bold text-white">Impor Data Ekskul</h3>
+                        <p class="text-sm text-slate-400">Unggah file Excel untuk menambah banyak ekskul sekaligus.</p>
+                    </div>
+                    <a href="{{ route('admin.ekskul.template') }}" class="text-blue-400 hover:text-blue-300 text-xs font-bold flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        Download Template
+                    </a>
+                </div>
+                <form action="{{ route('admin.ekskul.import') }}" method="POST" enctype="multipart/form-data" class="flex items-center gap-4">
+                    @csrf
+                    <input type="file" name="file" required class="flex-1 bg-slate-800 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-slate-400 file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:bg-blue-600 file:text-white hover:file:bg-blue-500 transition-all">
+                    <button type="submit" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl transition-all">Upload & Impor</button>
+                </form>
+            </div>
         </div>
 
         <!-- Add Ekskul Form -->

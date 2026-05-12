@@ -117,12 +117,37 @@ class AdminController extends Controller
     public function ekskulDestroy(Ekskul $ekskul): RedirectResponse
     {
         // Optional: Check if there are students joined
-        if ($ekskul->siswas()->count() > 0) {
+        if ($ekskul->siswas()->count() > 0 && !$ekskul->is_wajib) {
             return back()->with('error', 'Tidak dapat menghapus ekskul yang masih memiliki anggota.');
         }
 
         $ekskul->delete();
-        return back()->with('success', 'Ekskul berhasil dihapus.');
+        return back()->with('success', 'Ekskul ' . $ekskul->nama . ' berhasil dihapus.');
+    }
+
+    /**
+     * Import Ekskul from Excel.
+     */
+    public function ekskulImport(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'file' => ['required', 'mimes:xlsx,xls,csv'],
+        ]);
+
+        try {
+            \Maatwebsite\Excel\Facades\Excel::import(new \App\Imports\EkskulImport, $request->file('file'));
+            return back()->with('success', 'Data ekskul berhasil diimpor.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal mengimpor data: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Download Ekskul Template.
+     */
+    public function ekskulTemplate()
+    {
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\EkskulTemplateExport, 'template_ekskul.xlsx');
     }
 
     /**
