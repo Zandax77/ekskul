@@ -31,6 +31,58 @@
             </div>
         @endif
 
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
+            <!-- Statistik Bulanan -->
+            <div class="bg-slate-900/50 border border-white/10 rounded-3xl p-6">
+                <h3 class="text-sm font-bold text-white mb-6 flex items-center gap-2">
+                    <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    Kehadiran Bulanan
+                </h3>
+                <div class="h-[200px] w-full">
+                    <canvas id="attendanceChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Grafik Status Absen -->
+            <div class="bg-slate-900/50 border border-white/10 rounded-3xl p-6">
+                <h3 class="text-sm font-bold text-white mb-6 flex items-center gap-2">
+                    <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    Distribusi Ketidakhadiran
+                </h3>
+                <div class="h-[200px] w-full">
+                    <canvas id="absenteeChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Rekap Ketidakhadiran -->
+            <div class="bg-slate-900/50 border border-white/10 rounded-3xl p-6">
+                <h3 class="text-sm font-bold text-white mb-6 flex items-center gap-2">
+                    <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    Siswa Sering Absen
+                </h3>
+                <div class="space-y-4 max-h-[200px] overflow-y-auto pr-2 custom-scrollbar">
+                    @forelse($absenteeRecap as $siswaId => $records)
+                        @php $siswa = $records->first()->siswa; @endphp
+                        <div class="flex items-center justify-between p-3 bg-white/5 rounded-2xl">
+                            <div>
+                                <p class="text-xs font-bold text-white">{{ $siswa->nama }}</p>
+                                <p class="text-[10px] text-slate-500">Kelas: {{ $siswa->kelas ?? '-' }}</p>
+                            </div>
+                            <div class="flex gap-2">
+                                @foreach($records as $rec)
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold {{ $rec->status == 'alfa' ? 'bg-red-500/20 text-red-400' : 'bg-yellow-500/20 text-yellow-400' }}">
+                                        {{ $rec->status }}: {{ $rec->count }}
+                                    </span>
+                                @endforeach
+                            </div>
+                        </div>
+                    @empty
+                        <p class="text-slate-500 text-xs italic">Semua siswa rajin hadir.</p>
+                    @endforelse
+                </div>
+            </div>
+        </div>
+
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div class="lg:col-span-2 space-y-8">
                 <!-- Achievement List Section -->
@@ -92,9 +144,15 @@
                                 </div>
                                 <div class="flex items-center gap-3">
                                     <span class="text-xs text-slate-400">{{ $kegiatan->presensis->count() }} / {{ $ekskul->siswas->count() }} Hadir</span>
-                                    <a href="{{ route('pelatih.presensi', $kegiatan) }}" class="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-xs font-bold text-white hover:bg-white/10 transition-colors">
-                                        Catat Kehadiran
-                                    </a>
+                                    <div class="flex gap-2">
+                                        <a href="{{ route('pelatih.presensi.scan', $kegiatan) }}" class="px-4 py-2 rounded-xl bg-blue-600/20 border border-blue-500/30 text-xs font-bold text-blue-400 hover:bg-blue-600/30 transition-all flex items-center gap-2">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                            Scan QR
+                                        </a>
+                                        <a href="{{ route('pelatih.presensi', $kegiatan) }}" class="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-xs font-bold text-white hover:bg-white/10 transition-colors">
+                                            Catat Manual
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         @empty
@@ -172,3 +230,118 @@
     </main>
 </div>
 @endsection
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('attendanceChart').getContext('2d');
+        const labels = {!! json_encode($monthlyAttendance->reverse()->pluck('month_name')) !!};
+        const data = {!! json_encode($monthlyAttendance->reverse()->pluck('percentage')) !!};
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Persentase Kehadiran',
+                    data: data,
+                    backgroundColor: 'rgba(59, 130, 246, 0.4)',
+                    borderColor: '#3b82f6',
+                    borderWidth: 2,
+                    borderRadius: 10,
+                    hoverBackgroundColor: 'rgba(59, 130, 246, 0.6)',
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#1e293b',
+                        titleColor: '#fff',
+                        bodyColor: '#cbd5e1',
+                        padding: 12,
+                        cornerRadius: 12,
+                        displayColors: false,
+                        callbacks: {
+                            label: function(context) {
+                                return context.parsed.y + '% Kehadiran';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        grid: { color: 'rgba(255, 255, 255, 0.05)', drawBorder: false },
+                        ticks: { color: '#64748b', font: { size: 10 }, stepSize: 25 }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#64748b', font: { size: 10 } }
+                    }
+                }
+            }
+        });
+
+        // Absentee Distribution Chart
+        const absenteeCtx = document.getElementById('absenteeChart').getContext('2d');
+        const absenteeData = {
+            labels: ['Alfa', 'Izin', 'Sakit'],
+            datasets: [{
+                data: [
+                    {{ $absenteeDistribution['alfa'] ?? 0 }},
+                    {{ $absenteeDistribution['izin'] ?? 0 }},
+                    {{ $absenteeDistribution['sakit'] ?? 0 }}
+                ],
+                backgroundColor: [
+                    'rgba(239, 68, 68, 0.6)',   // red-500
+                    'rgba(245, 158, 11, 0.6)',  // amber-500
+                    'rgba(16, 185, 129, 0.6)'   // emerald-500
+                ],
+                borderColor: [
+                    '#ef4444',
+                    '#f59e0b',
+                    '#10b981'
+                ],
+                borderWidth: 2,
+                hoverOffset: 10
+            }]
+        };
+
+        new Chart(absenteeCtx, {
+            type: 'doughnut',
+            data: absenteeData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '70%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: '#94a3b8',
+                            usePointStyle: true,
+                            padding: 20,
+                            font: { size: 10 }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: '#1e293b',
+                        padding: 12,
+                        cornerRadius: 12,
+                        callbacks: {
+                            label: function(context) {
+                                return ' ' + context.label + ': ' + context.parsed + ' kali';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+@endpush

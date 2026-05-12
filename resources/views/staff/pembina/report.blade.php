@@ -33,6 +33,58 @@
             </div>
         @endif
 
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+            <!-- Grafik Kehadiran Bulanan -->
+            <div class="bg-slate-900/50 border border-white/10 rounded-3xl p-6">
+                <h3 class="text-sm font-bold text-white mb-6 flex items-center gap-2">
+                    <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    Kehadiran Bulanan
+                </h3>
+                <div class="h-[200px] w-full">
+                    <canvas id="attendanceChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Grafik Status Absen -->
+            <div class="bg-slate-900/50 border border-white/10 rounded-3xl p-6">
+                <h3 class="text-sm font-bold text-white mb-6 flex items-center gap-2">
+                    <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    Distribusi Ketidakhadiran
+                </h3>
+                <div class="h-[200px] w-full">
+                    <canvas id="absenteeChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Rekap Ketidakhadiran -->
+            <div class="bg-slate-900/50 border border-white/10 rounded-3xl p-6">
+                <h3 class="text-sm font-bold text-white mb-6 flex items-center gap-2">
+                    <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    Siswa Sering Absen
+                </h3>
+                <div class="space-y-4 max-h-[200px] overflow-y-auto pr-2 custom-scrollbar">
+                    @forelse($absenteeRecap as $siswaId => $records)
+                        @php $siswa = $records->first()->siswa; @endphp
+                        <div class="flex items-center justify-between p-3 bg-white/5 rounded-2xl">
+                            <div>
+                                <p class="text-xs font-bold text-white">{{ $siswa->nama }}</p>
+                                <p class="text-[10px] text-slate-500">Kelas: {{ $siswa->kelas ?? '-' }}</p>
+                            </div>
+                            <div class="flex gap-2">
+                                @foreach($records as $rec)
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold {{ $rec->status == 'alfa' ? 'bg-red-500/20 text-red-400' : 'bg-yellow-500/20 text-yellow-400' }}">
+                                        {{ $rec->status }}: {{ $rec->count }}
+                                    </span>
+                                @endforeach
+                            </div>
+                        </div>
+                    @empty
+                        <p class="text-slate-500 text-xs italic">Semua siswa rajin hadir.</p>
+                    @endforelse
+                </div>
+            </div>
+        </div>
+
         <section>
             <div class="flex items-center justify-between mb-6">
                 <h2 class="text-xl font-bold text-white">Laporan Kehadiran</h2>
@@ -52,7 +104,7 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-white/5">
-                            @foreach($ekskul->siswas as $siswa)
+                            @foreach($siswas as $siswa)
                                 <tr class="hover:bg-white/5 transition-colors">
                                     <td class="px-6 py-4">
                                         <p class="text-sm font-medium text-white">{{ $siswa->nama }}</p>
@@ -188,3 +240,63 @@
     </main>
 </div>
 @endsection
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Attendance Chart
+        const attendanceCtx = document.getElementById('attendanceChart').getContext('2d');
+        new Chart(attendanceCtx, {
+            type: 'bar',
+            data: {
+                labels: {!! json_encode($monthlyAttendance->reverse()->pluck('month_name')) !!},
+                datasets: [{
+                    label: 'Kehadiran',
+                    data: {!! json_encode($monthlyAttendance->reverse()->pluck('percentage')) !!},
+                    backgroundColor: 'rgba(59, 130, 246, 0.4)',
+                    borderColor: '#3b82f6',
+                    borderWidth: 2,
+                    borderRadius: 8,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, max: 100, grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#64748b' } },
+                    x: { grid: { display: false }, ticks: { color: '#64748b' } }
+                }
+            }
+        });
+
+        // Absentee Chart
+        const absenteeCtx = document.getElementById('absenteeChart').getContext('2d');
+        new Chart(absenteeCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Alfa', 'Izin', 'Sakit'],
+                datasets: [{
+                    data: [
+                        {{ $absenteeDistribution['alfa'] ?? 0 }},
+                        {{ $absenteeDistribution['izin'] ?? 0 }},
+                        {{ $absenteeDistribution['sakit'] ?? 0 }}
+                    ],
+                    backgroundColor: ['rgba(239, 68, 68, 0.6)', 'rgba(245, 158, 11, 0.6)', 'rgba(16, 185, 129, 0.6)'],
+                    borderColor: ['#ef4444', '#f59e0b', '#10b981'],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '70%',
+                plugins: {
+                    legend: { position: 'bottom', labels: { color: '#94a3b8', font: { size: 10 }, usePointStyle: true } }
+                }
+            }
+        });
+    });
+</script>
+@endpush

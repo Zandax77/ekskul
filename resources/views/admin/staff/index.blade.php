@@ -4,28 +4,7 @@
 
 @section('content')
 <div class="min-h-screen bg-slate-950 text-slate-200">
-    <nav class="border-b border-white/10 bg-slate-900/50 backdrop-blur-xl sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center">
-                    <a href="{{ route('admin.dashboard') }}" class="text-xl font-bold text-white tracking-tight">EkskulHub <span class="text-red-500 text-sm ml-2 font-black">ADMIN</span></a>
-                </div>
-                <div class="flex items-center gap-6">
-                    <div class="flex gap-4">
-                        <a href="{{ route('admin.dashboard') }}" class="text-sm text-slate-400 hover:text-white transition-colors">Dashboard</a>
-                        <a href="{{ route('admin.ekskul.index') }}" class="text-sm text-slate-400 hover:text-white transition-colors">Ekskul</a>
-                        <a href="{{ route('admin.staff.index') }}" class="text-sm text-white font-medium">Staf</a>
-                        <a href="{{ route('admin.siswa.index') }}" class="text-sm text-slate-400 hover:text-white transition-colors">Siswa</a>
-                        <a href="{{ route('admin.wali-kelas.index') }}" class="text-sm text-slate-400 hover:text-white transition-colors">Wali Kelas</a>
-                    </div>
-                    <form action="{{ route('admin.logout') }}" method="POST">
-                        @csrf
-                        <button type="submit" class="text-sm text-red-400 hover:text-red-300">Keluar</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </nav>
+    @include('admin.partials.nav')
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <h1 class="text-2xl font-bold text-white mb-8">Manajemen Staf</h1>
@@ -101,6 +80,7 @@
                             <tr class="bg-white/5 border-b border-white/10">
                                 <th class="px-6 py-4 text-xs font-bold uppercase text-slate-500">Nama / NIP</th>
                                 <th class="px-6 py-4 text-xs font-bold uppercase text-slate-500 text-center">Ekskul</th>
+                                <th class="px-6 py-4 text-xs font-bold uppercase text-slate-500 text-right">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-white/5">
@@ -114,6 +94,12 @@
                                         <span class="px-3 py-1 rounded-full text-[10px] font-bold {{ $p->ekskuls_count >= 3 ? 'bg-red-500/20 text-red-400' : 'bg-blue-500/20 text-blue-400' }}">
                                             {{ $p->ekskuls_count }} / 3
                                         </span>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <form action="{{ route('admin.staff.reset', $p->id) }}?role=pembina" method="POST" class="inline">
+                                            @csrf
+                                            <button type="submit" onclick="return confirm('Reset sandi pembina {{ $p->nama }} ke default (12345678)?')" class="text-[10px] font-bold text-amber-400 hover:text-amber-300 uppercase tracking-wider border border-amber-400/20 px-2 py-1 rounded hover:bg-amber-400/10 transition-all">Reset</button>
+                                        </form>
                                     </td>
                                 </tr>
                             @endforeach
@@ -131,6 +117,7 @@
                             <tr class="bg-white/5 border-b border-white/10">
                                 <th class="px-6 py-4 text-xs font-bold uppercase text-slate-500">Nama / NIP</th>
                                 <th class="px-6 py-4 text-xs font-bold uppercase text-slate-500 text-center">Ekskul</th>
+                                <th class="px-6 py-4 text-xs font-bold uppercase text-slate-500 text-right">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-white/5">
@@ -144,6 +131,12 @@
                                         <span class="px-3 py-1 rounded-full text-[10px] font-bold {{ $l->ekskuls_count >= 3 ? 'bg-red-500/20 text-red-400' : 'bg-emerald-500/20 text-emerald-400' }}">
                                             {{ $l->ekskuls_count }} / 3
                                         </span>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <form action="{{ route('admin.staff.reset', $l->id) }}?role=pelatih" method="POST" class="inline">
+                                            @csrf
+                                            <button type="submit" onclick="return confirm('Reset sandi pelatih {{ $l->nama }} ke default (12345678)?')" class="text-[10px] font-bold text-amber-400 hover:text-amber-300 uppercase tracking-wider border border-amber-400/20 px-2 py-1 rounded hover:bg-amber-400/10 transition-all">Reset</button>
+                                        </form>
                                     </td>
                                 </tr>
                             @endforeach

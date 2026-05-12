@@ -10,6 +10,9 @@ class Kegiatan extends Model
         'ekskul_id',
         'tanggal',
         'keterangan',
+        'materi',
+        'catatan',
+        'foto_kegiatan',
     ];
 
     public function ekskul()

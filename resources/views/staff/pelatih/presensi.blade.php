@@ -19,15 +19,38 @@
 
     <main class="max-w-4xl mx-auto px-4 py-8">
         <div class="bg-slate-900/50 border border-white/10 rounded-3xl overflow-hidden shadow-2xl">
-            <div class="p-6 border-b border-white/10">
-                <h2 class="text-lg font-bold text-white">Daftar Anggota Ekskul</h2>
-                <p class="text-sm text-slate-500">Silakan tandai kehadiran setiap siswa di bawah ini.</p>
-            </div>
-
-            <form action="{{ route('pelatih.presensi.store', $kegiatan) }}" method="POST">
+            <form action="{{ route('pelatih.presensi.store', $kegiatan) }}" method="POST" enctype="multipart/form-data">
                 @csrf
+                <div class="p-6 border-b border-white/10">
+                    <h2 class="text-lg font-bold text-white">Jurnal & Presensi</h2>
+                    <p class="text-sm text-slate-500">Lengkapi laporan kegiatan dan daftar hadir siswa.</p>
+                </div>
+                <div class="p-6 space-y-6 border-b border-white/10">
+                    <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Jurnal Kegiatan</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="md:col-span-2">
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1.5">Materi Latihan / Kegiatan</label>
+                            <textarea name="materi" required rows="3" placeholder="Jelaskan materi yang diajarkan hari ini..." class="w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-slate-200 outline-none focus:border-blue-500 resize-none">{{ old('materi', $kegiatan->materi) }}</textarea>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1.5">Catatan Tambahan (Opsional)</label>
+                            <textarea name="catatan" rows="2" class="w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-slate-200 outline-none focus:border-blue-500 resize-none">{{ old('catatan', $kegiatan->catatan) }}</textarea>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1.5">Foto Kegiatan</label>
+                            <input type="file" name="foto_kegiatan" accept="image/*" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-[10px] file:font-bold file:bg-blue-600 file:text-white hover:file:bg-blue-500 transition-all">
+                            @if($kegiatan->foto_kegiatan)
+                                <p class="mt-2 text-[10px] text-slate-500 italic">Sudah ada foto terunggah</p>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-6 border-b border-white/10">
+                    <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest">Daftar Kehadiran Siswa</h3>
+                </div>
                 <div class="divide-y divide-white/5">
-                    @foreach($kegiatan->ekskul->siswas as $siswa)
+                    @foreach($siswas as $siswa)
                         @php
                             $status = $kegiatan->presensis->where('siswa_id', $siswa->id)->first()?->status ?? 'hadir';
                         @endphp

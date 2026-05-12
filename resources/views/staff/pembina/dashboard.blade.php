@@ -7,8 +7,18 @@
     <nav class="border-b border-white/10 bg-slate-900/50 backdrop-blur-xl sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
-                <div class="flex items-center">
-                    <span class="text-xl font-bold text-white tracking-tight">EkskulHub <span class="text-emerald-400 text-sm ml-2">PEMBINA</span></span>
+                <div class="flex items-center gap-3">
+                    @php $logo = \App\Models\Setting::get('logo_sekolah'); @endphp
+                    @if($logo)
+                        <img src="{{ asset('storage/' . $logo) }}" alt="Logo" class="h-8 w-auto">
+                    @else
+                        <div class="h-8 w-8 rounded-lg bg-emerald-600 flex items-center justify-center">
+                            <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                            </svg>
+                        </div>
+                    @endif
+                    <span class="text-xl font-bold text-white tracking-tight">{{ \App\Models\Setting::get('nama_sekolah', 'EkskulHub') }} <span class="text-emerald-400 text-sm ml-2 font-black uppercase tracking-widest">PEMBINA</span></span>
                 </div>
                 <div class="flex items-center gap-4">
                     <span class="text-sm text-slate-400">{{ Auth::guard('pembina')->user()->nama }}</span>

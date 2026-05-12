@@ -44,4 +44,9 @@ class Ekskul extends Model
     {
         return $this->hasMany(Penilaian::class);
     }
+
+    public function presensis()
+    {
+        return $this->hasManyThrough(Presensi::class, Kegiatan::class);
+    }
 }

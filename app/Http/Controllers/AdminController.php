@@ -10,7 +10,10 @@ use App\Models\Pelatih;
 use App\Models\User;
 use App\Models\Prestasi;
 use App\Models\WaliKelas;
+use App\Models\Setting;
+use App\Models\Kegiatan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use App\Imports\SiswaImport;
 use App\Imports\StaffImport;
 use App\Imports\WaliKelasImport;
@@ -255,6 +258,18 @@ class AdminController extends Controller
             return back()->with('error', 'Gagal mengimpor data: ' . $e->getMessage());
         }
     }
+    
+    /**
+     * Reset Siswa Password.
+     */
+    public function siswaReset(Siswa $siswa): RedirectResponse
+    {
+        $siswa->update([
+            'password' => Hash::make('12345678')
+        ]);
+    
+        return back()->with('success', 'Password siswa ' . $siswa->nama . ' berhasil direset menjadi: 12345678');
+    }
 
     /**
      * Download Siswa Template.
@@ -287,6 +302,27 @@ class AdminController extends Controller
     public function staffTemplate()
     {
         return Excel::download(new StaffTemplateExport, 'template_staf.xlsx');
+    }
+    
+    /**
+     * Reset Staff Password.
+     */
+    public function staffReset(Request $request, $id): RedirectResponse
+    {
+        $role = $request->query('role');
+        if ($role === 'pembina') {
+            $user = Pembina::findOrFail($id);
+        } elseif ($role === 'pelatih') {
+            $user = Pelatih::findOrFail($id);
+        } else {
+            return back()->with('error', 'Role tidak valid.');
+        }
+    
+        $user->update([
+            'password' => Hash::make('12345678')
+        ]);
+    
+        return back()->with('success', 'Password ' . $role . ' ' . $user->nama . ' berhasil direset menjadi: 12345678');
     }
 
     /**
@@ -364,5 +400,64 @@ class AdminController extends Controller
     {
         $waliKelas->delete();
         return back()->with('success', 'Data wali kelas berhasil dihapus.');
+    }
+    /**
+     * Show school settings.
+     */
+    public function settingsIndex(): View
+    {
+        $settings = [
+            'nama_sekolah' => Setting::get('nama_sekolah', config('app.name')),
+            'alamat_sekolah' => Setting::get('alamat_sekolah'),
+            'logo_sekolah' => Setting::get('logo_sekolah'),
+        ];
+        return view('admin.settings.index', compact('settings'));
+    }
+
+    /**
+     * Update school settings.
+     */
+    public function settingsUpdate(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'nama_sekolah' => ['required', 'string', 'max:255'],
+            'alamat_sekolah' => ['nullable', 'string'],
+            'logo_sekolah' => ['nullable', 'image', 'mimes:png,jpg,jpeg,svg', 'max:2048'],
+        ]);
+
+        Setting::set('nama_sekolah', $request->nama_sekolah);
+        Setting::set('alamat_sekolah', $request->alamat_sekolah);
+
+        if ($request->hasFile('logo_sekolah')) {
+            // Delete old logo if exists
+            $oldLogo = Setting::get('logo_sekolah');
+            if ($oldLogo) {
+                Storage::disk('public')->delete($oldLogo);
+            }
+
+            $path = $request->file('logo_sekolah')->store('school', 'public');
+            Setting::set('logo_sekolah', $path);
+        }
+
+        return back()->with('success', 'Pengaturan sekolah berhasil diperbarui.');
+    }
+
+    /**
+     * Show Journal Recap.
+     */
+    public function journalIndex(): View
+    {
+        $journals = Kegiatan::whereNotNull('materi')
+            ->with(['ekskul.pelatih', 'presensis'])
+            ->withCount([
+                'presensis as total_hadir' => function($query) { $query->where('status', 'hadir'); },
+                'presensis as total_izin' => function($query) { $query->where('status', 'izin'); },
+                'presensis as total_sakit' => function($query) { $query->where('status', 'sakit'); },
+                'presensis as total_alfa' => function($query) { $query->where('status', 'alfa'); }
+            ])
+            ->latest('tanggal')
+            ->get();
+            
+        return view('admin.journal.index', compact('journals'));
     }
 }

@@ -7,8 +7,18 @@
     <nav class="border-b border-white/10 bg-slate-900/50 backdrop-blur-xl sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
-                <div class="flex items-center">
-                    <span class="text-xl font-bold text-white tracking-tight">EkskulHub <span class="text-blue-400 text-sm ml-2">PELATIH</span></span>
+                <div class="flex items-center gap-3">
+                    @php $logo = \App\Models\Setting::get('logo_sekolah'); @endphp
+                    @if($logo)
+                        <img src="{{ asset('storage/' . $logo) }}" alt="Logo" class="h-8 w-auto">
+                    @else
+                        <div class="h-8 w-8 rounded-lg bg-blue-600 flex items-center justify-center">
+                            <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                        </div>
+                    @endif
+                    <span class="text-xl font-bold text-white tracking-tight">{{ \App\Models\Setting::get('nama_sekolah', 'EkskulHub') }} <span class="text-blue-400 text-sm ml-2 font-black uppercase tracking-widest">PELATIH</span></span>
                 </div>
                 <div class="flex items-center gap-4">
                     <span class="text-sm text-slate-400">{{ Auth::guard('pelatih')->user()->nama }}</span>

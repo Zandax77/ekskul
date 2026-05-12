@@ -12,6 +12,9 @@ use Illuminate\View\View;
 use App\Models\Prestasi;
 use App\Models\Penilaian;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+use App\Models\Siswa;
 
 class PelatihController extends Controller
 {
@@ -31,7 +34,45 @@ class PelatihController extends Controller
         }
 
         $ekskul->load(['kegiatans', 'siswas', 'prestasis.siswa']);
-        return view('staff.pelatih.ekskul-detail', compact('ekskul'));
+
+        $monthlyAttendance = DB::table('presensis')
+            ->join('kegiatans', 'presensis.kegiatan_id', '=', 'kegiatans.id')
+            ->where('kegiatans.ekskul_id', $ekskul->id)
+            ->select(
+                DB::raw('strftime("%m", tanggal) as month'),
+                DB::raw('strftime("%Y", tanggal) as year'),
+                DB::raw('COUNT(*) as total_records'),
+                DB::raw('SUM(CASE WHEN status = "hadir" THEN 1 ELSE 0 END) as total_hadir')
+            )
+            ->groupBy('year', 'month')
+            ->orderBy('year', 'desc')
+            ->orderBy('month', 'desc')
+            ->get()
+            ->map(function ($item) {
+                $item->percentage = $item->total_records > 0 ? round(($item->total_hadir / $item->total_records) * 100, 1) : 0;
+                $item->month_name = Carbon::create((int)$item->year, (int)$item->month, 1)->translatedFormat('F Y');
+                return $item;
+            });
+
+        $absenteeRecap = Presensi::join('kegiatans', 'presensis.kegiatan_id', '=', 'kegiatans.id')
+            ->where('kegiatans.ekskul_id', $ekskul->id)
+            ->whereIn('status', ['alfa', 'izin', 'sakit'])
+            ->with('siswa')
+            ->select('presensis.siswa_id', 'presensis.status', DB::raw('COUNT(*) as count'))
+            ->groupBy('presensis.siswa_id', 'presensis.status')
+            ->get()
+            ->groupBy('siswa_id');
+
+        $absenteeDistribution = DB::table('presensis')
+            ->join('kegiatans', 'presensis.kegiatan_id', '=', 'kegiatans.id')
+            ->where('kegiatans.ekskul_id', $ekskul->id)
+            ->whereIn('status', ['alfa', 'izin', 'sakit'])
+            ->select('status', DB::raw('COUNT(*) as total'))
+            ->groupBy('status')
+            ->get()
+            ->pluck('total', 'status');
+
+        return view('staff.pelatih.ekskul-detail', compact('ekskul', 'monthlyAttendance', 'absenteeRecap', 'absenteeDistribution'));
     }
 
     public function storeKegiatan(Request $request, Ekskul $ekskul): RedirectResponse
@@ -56,8 +97,25 @@ class PelatihController extends Controller
             abort(403);
         }
 
-        $kegiatan->load(['ekskul.siswas', 'presensis']);
-        return view('staff.pelatih.presensi', compact('kegiatan'));
+        $ekskul = $kegiatan->ekskul;
+        
+        if ($ekskul->is_wajib) {
+            // For mandatory ekskul, get all students in the specified grades
+            $grades = explode(',', $ekskul->wajib_kelas);
+            $siswas = Siswa::where(function($query) use ($grades) {
+                foreach ($grades as $grade) {
+                    $query->orWhere('kelas', 'like', trim($grade) . '%');
+                }
+            })->orderBy('nama')->get();
+        } else {
+            // For optional ekskul, get only enrolled students
+            $siswas = $ekskul->siswas()->orderBy('nama')->get();
+        }
+
+        $kegiatan->setRelation('siswas_list', $siswas);
+        $kegiatan->load(['presensis']);
+        
+        return view('staff.pelatih.presensi', compact('kegiatan', 'siswas'));
     }
 
     public function storePresensi(Request $request, Kegiatan $kegiatan): RedirectResponse
@@ -69,8 +127,22 @@ class PelatihController extends Controller
         $request->validate([
             'presensi' => ['required', 'array'],
             'presensi.*' => ['required', 'in:hadir,izin,sakit,alfa'],
+            'materi' => ['required', 'string'],
+            'catatan' => ['nullable', 'string'],
+            'foto_kegiatan' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
         ]);
 
+        // Save Journal
+        $data = $request->only(['materi', 'catatan']);
+        if ($request->hasFile('foto_kegiatan')) {
+            if ($kegiatan->foto_kegiatan) {
+                Storage::disk('public')->delete($kegiatan->foto_kegiatan);
+            }
+            $data['foto_kegiatan'] = $request->file('foto_kegiatan')->store('jurnal', 'public');
+        }
+        $kegiatan->update($data);
+
+        // Save Presensi
         foreach ($request->presensi as $siswaId => $status) {
             Presensi::updateOrCreate(
                 ['kegiatan_id' => $kegiatan->id, 'siswa_id' => $siswaId],
@@ -79,7 +151,45 @@ class PelatihController extends Controller
         }
 
         return redirect()->route('pelatih.ekskul.show', $kegiatan->ekskul_id)
-            ->with('success', 'Kehadiran berhasil dicatat.');
+            ->with('success', 'Kehadiran dan Jurnal berhasil dicatat.');
+    }
+
+    public function scan(Kegiatan $kegiatan): View
+    {
+        if ($kegiatan->ekskul->pelatih_id !== Auth::guard('pelatih')->id()) {
+            abort(403);
+        }
+
+        return view('staff.pelatih.scan', compact('kegiatan'));
+    }
+
+    public function processScan(Request $request, Kegiatan $kegiatan)
+    {
+        if ($kegiatan->ekskul->pelatih_id !== Auth::guard('pelatih')->id()) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        $siswa = Siswa::where('nis', $request->nis)->first();
+
+        if (!$siswa) {
+            return response()->json(['success' => false, 'message' => 'Siswa tidak ditemukan'], 404);
+        }
+
+        // Check if student is enrolled in this ekskul
+        if (!$kegiatan->ekskul->siswas()->where('siswa_id', $siswa->id)->exists()) {
+             return response()->json(['success' => false, 'message' => 'Siswa tidak terdaftar di ekskul ini'], 400);
+        }
+
+        Presensi::updateOrCreate(
+            ['kegiatan_id' => $kegiatan->id, 'siswa_id' => $siswa->id],
+            ['status' => 'hadir']
+        );
+
+        return response()->json([
+            'success' => true, 
+            'message' => 'Kehadiran ' . $siswa->nama . ' berhasil dicatat',
+            'siswa' => $siswa->nama
+        ]);
     }
 
     public function storePrestasi(Request $request, Ekskul $ekskul): RedirectResponse

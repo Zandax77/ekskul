@@ -14,13 +14,21 @@
         {{-- ===== NAVBAR ===== --}}
         <header class="px-5 sm:px-8 py-5 max-w-7xl mx-auto flex justify-between items-center">
             {{-- Logo --}}
-            <a href="/" class="flex items-center gap-2 shrink-0">
-                <div class="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(37,99,235,0.35)]">
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                    </svg>
+            <a href="/" class="flex items-center gap-3 shrink-0">
+                @php $logo = \App\Models\Setting::get('logo_sekolah'); @endphp
+                @if($logo)
+                    <img src="{{ asset('storage/' . $logo) }}" alt="Logo" class="h-10 w-auto">
+                @else
+                    <div class="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(37,99,235,0.35)]">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                    </div>
+                @endif
+                <div class="flex flex-col">
+                    <span class="text-xl font-black tracking-tighter text-white leading-none">{{ \App\Models\Setting::get('nama_sekolah', 'EkskulHub') }}</span>
+                    <span class="text-[10px] font-bold text-blue-500 uppercase tracking-widest mt-1">Sistem Manajemen Terpadu</span>
                 </div>
-                <span class="text-xl font-black tracking-tighter text-white">EKSKUL<span class="text-blue-500">HUB</span></span>
             </a>
 
             {{-- Desktop nav --}}
@@ -237,19 +245,24 @@
         {{-- ===== FOOTER ===== --}}
         <footer class="px-5 sm:px-8 py-12 border-t border-white/5 text-center">
             <div class="flex flex-col items-center gap-5">
-                <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 bg-blue-600/20 rounded-lg flex items-center justify-center text-blue-500">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
-                    </div>
-                    <span class="text-lg font-bold tracking-tighter text-white">EkskulHub</span>
+                <div class="flex items-center gap-3">
+                    @php $logo = \App\Models\Setting::get('logo_sekolah'); @endphp
+                    @if($logo)
+                        <img src="{{ asset('storage/' . $logo) }}" alt="Logo" class="h-8 w-auto">
+                    @else
+                        <div class="w-8 h-8 bg-blue-600/20 rounded-lg flex items-center justify-center text-blue-500">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+                        </div>
+                    @endif
+                    <span class="text-lg font-bold tracking-tighter text-white">{{ \App\Models\Setting::get('nama_sekolah', 'EkskulHub') }}</span>
                 </div>
-                <p class="text-slate-500 text-sm max-w-xs mx-auto">Membangun masa depan siswa melalui kegiatan ekstrakurikuler yang terorganisir.</p>
+                <p class="text-slate-500 text-sm max-w-sm mx-auto">{{ \App\Models\Setting::get('alamat_sekolah') ?? 'Membangun masa depan siswa melalui kegiatan ekstrakurikuler yang terorganisir.' }}</p>
                 <div class="flex flex-wrap justify-center gap-5 text-slate-500 text-xs mt-2">
                     <a href="#" class="hover:text-white transition-colors">Syarat &amp; Ketentuan</a>
                     <a href="#" class="hover:text-white transition-colors">Kebijakan Privasi</a>
                     <a href="#" class="hover:text-white transition-colors">Kontak Kami</a>
                 </div>
-                <p class="text-slate-700 text-xs">&copy; {{ date('Y') }} EkskulHub. Developed with ❤️ for Schools.</p>
+                <p class="text-slate-700 text-xs">&copy; {{ date('Y') }} {{ \App\Models\Setting::get('nama_sekolah', 'EkskulHub') }}. All rights reserved.</p>
             </div>
         </footer>
 

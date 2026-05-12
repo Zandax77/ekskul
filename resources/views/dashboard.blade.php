@@ -9,13 +9,18 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex items-center">
-                    <div class="flex-shrink-0 flex items-center gap-2">
-                        <div class="h-8 w-8 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center">
-                            <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                            </svg>
-                        </div>
-                        <span class="text-xl font-bold text-white tracking-tight">EkskulHub</span>
+                    <div class="flex-shrink-0 flex items-center gap-3">
+                        @php $logo = \App\Models\Setting::get('logo_sekolah'); @endphp
+                        @if($logo)
+                            <img src="{{ asset('storage/' . $logo) }}" alt="Logo" class="h-8 w-auto">
+                        @else
+                            <div class="h-8 w-8 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center">
+                                <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                </svg>
+                            </div>
+                        @endif
+                        <span class="text-xl font-bold text-white tracking-tight">{{ \App\Models\Setting::get('nama_sekolah', 'EkskulHub') }}</span>
                     </div>
                 </div>
                 <div class="flex items-center gap-4">
@@ -299,6 +304,16 @@
                             </svg>
                         </a>
                     </div>
+                </div>
+
+                <!-- QR Code Card -->
+                <div class="bg-slate-900/50 border border-white/10 rounded-3xl p-6 text-center shadow-2xl">
+                    <h3 class="text-lg font-bold text-white mb-4">Kartu QR Anggota</h3>
+                    <div class="bg-white p-3 rounded-2xl inline-block mb-4 shadow-xl shadow-white/5 group transition-transform hover:scale-105">
+                        {!! SimpleSoftwareIO\QrCode\Facades\QrCode::size(140)->margin(1)->generate(Auth::guard('siswa')->user()->nis) !!}
+                    </div>
+                    <p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Scan QR untuk Presensi</p>
+                    <p class="text-[9px] text-slate-600 mt-1">NIS: {{ Auth::guard('siswa')->user()->nis }}</p>
                 </div>
 
                 <div class="bg-gradient-to-br from-slate-900 to-slate-950 border border-white/10 rounded-3xl p-6 relative overflow-hidden">

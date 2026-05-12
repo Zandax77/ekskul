@@ -48,11 +48,13 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::post('/staff', [AdminController::class, 'staffStore'])->name('staff.store');
     Route::get('/staff/template', [AdminController::class, 'staffTemplate'])->name('staff.template');
     Route::post('/staff/import', [AdminController::class, 'staffImport'])->name('staff.import');
+    Route::post('/staff/{id}/reset', [AdminController::class, 'staffReset'])->name('staff.reset');
     
     Route::get('/siswa', [AdminController::class, 'siswaIndex'])->name('siswa.index');
     Route::post('/siswa', [AdminController::class, 'siswaStore'])->name('siswa.store');
     Route::get('/siswa/template', [AdminController::class, 'siswaTemplate'])->name('siswa.template');
     Route::post('/siswa/import', [AdminController::class, 'siswaImport'])->name('siswa.import');
+    Route::post('/siswa/{siswa}/reset', [AdminController::class, 'siswaReset'])->name('siswa.reset');
 
     Route::get('/wali-kelas', [AdminController::class, 'waliKelasIndex'])->name('wali-kelas.index');
     Route::post('/wali-kelas', [AdminController::class, 'waliKelasStore'])->name('wali-kelas.store');
@@ -60,6 +62,11 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::post('/wali-kelas/import', [AdminController::class, 'waliKelasImport'])->name('wali-kelas.import');
     Route::post('/wali-kelas/{wali_kelas}/reset', [AdminController::class, 'waliKelasReset'])->name('wali-kelas.reset');
     Route::delete('/wali-kelas/{wali_kelas}', [AdminController::class, 'waliKelasDestroy'])->name('wali-kelas.destroy');
+
+    Route::get('/settings', [AdminController::class, 'settingsIndex'])->name('settings.index');
+    Route::post('/settings', [AdminController::class, 'settingsUpdate'])->name('settings.store');
+    
+    Route::get('/journals', [AdminController::class, 'journalIndex'])->name('journal.index');
 });
 
 Route::middleware('auth:siswa')->group(function () {
@@ -78,6 +85,8 @@ Route::middleware('auth:pelatih')->prefix('pelatih')->name('pelatih.')->group(fu
     Route::post('/ekskul/{ekskul}/kegiatan', [PelatihController::class, 'storeKegiatan'])->name('kegiatan.store');
     Route::get('/kegiatan/{kegiatan}/presensi', [PelatihController::class, 'presensi'])->name('presensi');
     Route::post('/kegiatan/{kegiatan}/presensi', [PelatihController::class, 'storePresensi'])->name('presensi.store');
+    Route::get('/kegiatan/{kegiatan}/scan', [PelatihController::class, 'scan'])->name('presensi.scan');
+    Route::post('/kegiatan/{kegiatan}/scan', [PelatihController::class, 'processScan'])->name('presensi.processScan');
     Route::post('/ekskul/{ekskul}/prestasi', [PelatihController::class, 'storePrestasi'])->name('prestasi.store');
     
     // Penilaian

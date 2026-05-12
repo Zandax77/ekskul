@@ -15,12 +15,14 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Admin User
-        \App\Models\User::create([
-            'name' => 'Super Admin',
-            'email' => 'admin@ekskul.com',
-            'password' => \Illuminate\Support\Facades\Hash::make('password'),
-        ]);
+        // Admin User (Handled by migration, but ensured here)
+        \App\Models\User::updateOrCreate(
+            ['email' => 'admin@ekskul.com'],
+            [
+                'name' => 'Super Admin',
+                'password' => \Illuminate\Support\Facades\Hash::make('admin123'),
+            ]
+        );
 
         $this->call([
             SiswaSeeder::class,
