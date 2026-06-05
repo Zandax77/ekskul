@@ -17,7 +17,7 @@
             <a href="/" class="flex items-center gap-3 shrink-0">
                 @php $logo = \App\Models\Setting::get('logo_sekolah'); @endphp
                 @if($logo)
-                    <img src="{{ asset('storage/' . $logo) }}" alt="Logo" class="h-10 w-auto">
+                    <img src="{{ \Illuminate\Support\Facades\Storage::url($logo) }}" alt="Logo" class="h-10 w-auto">
                 @else
                     <div class="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(37,99,235,0.35)]">
                         <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -248,7 +248,7 @@
                 <div class="flex items-center gap-3">
                     @php $logo = \App\Models\Setting::get('logo_sekolah'); @endphp
                     @if($logo)
-                        <img src="{{ asset('storage/' . $logo) }}" alt="Logo" class="h-8 w-auto">
+                        <img src="{{ \Illuminate\Support\Facades\Storage::url($logo) }}" alt="Logo" class="h-8 w-auto">
                     @else
                         <div class="w-8 h-8 bg-blue-600/20 rounded-lg flex items-center justify-center text-blue-500">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>

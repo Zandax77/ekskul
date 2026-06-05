@@ -15,6 +15,17 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// Fallback route untuk file storage (ketika symlink tidak tersedia di hosting)
+Route::get('/storage/{path}', function ($path) {
+    $file = storage_path('app/public/' . $path);
+    
+    if (!file_exists($file)) {
+        abort(404);
+    }
+    
+    return response()->file($file);
+})->where('path', '.*')->name('storage.fallback');
+
 // Siswa Auth
 Route::get('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/login', [AuthController::class, 'authenticate']);

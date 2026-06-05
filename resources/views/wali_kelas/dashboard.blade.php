@@ -10,7 +10,7 @@
                 <div class="flex items-center gap-3">
                     @php $logo = \App\Models\Setting::get('logo_sekolah'); @endphp
                     @if($logo)
-                        <img src="{{ asset('storage/' . $logo) }}" alt="Logo" class="h-10 w-auto">
+                        <img src="{{ \Illuminate\Support\Facades\Storage::url($logo) }}" alt="Logo" class="h-10 w-auto">
                     @else
                         <div class="h-10 w-10 flex items-center justify-center rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-800 shadow-lg shadow-emerald-600/20">
                             <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">

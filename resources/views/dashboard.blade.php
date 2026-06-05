@@ -12,7 +12,7 @@
                     <div class="flex-shrink-0 flex items-center gap-3">
                         @php $logo = \App\Models\Setting::get('logo_sekolah'); @endphp
                         @if($logo)
-                            <img src="{{ asset('storage/' . $logo) }}" alt="Logo" class="h-8 w-auto">
+                            <img src="{{ \Illuminate\Support\Facades\Storage::url($logo) }}" alt="Logo" class="h-8 w-auto">
                         @else
                             <div class="h-8 w-8 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center">
                                 <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">

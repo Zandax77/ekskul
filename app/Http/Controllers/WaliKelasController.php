@@ -59,8 +59,8 @@ class WaliKelasController extends Controller
             ->join('siswas', 'presensis.siswa_id', '=', 'siswas.id')
             ->where('siswas.kelas', $waliKelas->kelas)
             ->select(
-                DB::raw('strftime("%m", tanggal) as month'),
-                DB::raw('strftime("%Y", tanggal) as year'),
+                DB::raw('DATE_FORMAT(tanggal, "%m") as month'),
+                DB::raw('DATE_FORMAT(tanggal, "%Y") as year'),
                 DB::raw('COUNT(*) as total_records'),
                 DB::raw('SUM(CASE WHEN status = "hadir" THEN 1 ELSE 0 END) as total_hadir')
             )
