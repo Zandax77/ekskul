@@ -83,7 +83,10 @@
                 </div>
             </div>
         </div>
-            <table class="w-full text-left border-collapse">
+
+        <div class="bg-slate-900/50 border border-white/10 rounded-3xl overflow-hidden shadow-2xl">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
                 <thead>
                     <tr class="bg-white/5 border-b border-white/10">
                         <th class="px-6 py-4 text-xs font-bold uppercase text-slate-500">Nama / NIS</th>
@@ -115,6 +118,7 @@
                     @endforeach
                 </tbody>
             </table>
+            </div>
         </div>
 
         <div class="hidden" id="print-content">
