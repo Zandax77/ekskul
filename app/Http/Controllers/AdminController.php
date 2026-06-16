@@ -18,9 +18,11 @@ use App\Imports\SiswaImport;
 use App\Imports\StaffImport;
 use App\Imports\WaliKelasImport;
 use App\Exports\SiswaTemplateExport;
+use App\Exports\SiswaPesertaEkskulExport;
 use App\Exports\StaffTemplateExport;
 use App\Exports\WaliKelasTemplateExport;
 use Maatwebsite\Excel\Facades\Excel;
+
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -39,7 +41,7 @@ class AdminController extends Controller
             'ekskul' => Ekskul::count(),
             'wali_kelas' => WaliKelas::count(),
         ];
-        
+
         // Data Grafik
         $ekskulsData = Ekskul::withCount('siswas')->get();
         $chartLabels = $ekskulsData->pluck('nama')->toArray();
@@ -61,7 +63,7 @@ class AdminController extends Controller
             )
             ->groupBy('ekskuls.id', 'ekskuls.nama')
             ->get();
-        
+
         return view('admin.dashboard', compact('stats', 'chartLabels', 'chartData', 'prestasis', 'attendanceRecap'));
     }
 
@@ -73,7 +75,7 @@ class AdminController extends Controller
         $ekskuls = Ekskul::with(['pembina', 'pelatih'])->get();
         $pembinas = Pembina::withCount('ekskuls')->get();
         $pelatihs = Pelatih::withCount('ekskuls')->get();
-        
+
         return view('admin.ekskul.index', compact('ekskuls', 'pembinas', 'pelatihs'));
     }
 
@@ -209,7 +211,7 @@ class AdminController extends Controller
     {
         $pembinas = Pembina::withCount('ekskuls')->get();
         $pelatihs = Pelatih::withCount('ekskuls')->get();
-        
+
         return view('admin.staff.index', compact('pembinas', 'pelatihs'));
     }
 
@@ -218,9 +220,10 @@ class AdminController extends Controller
      */
     public function siswaIndex(): View
     {
-        $siswas = Siswa::withCount('ekskuls')->get();
+        $siswas = Siswa::with(['ekskuls'])->withCount('ekskuls')->get();
         return view('admin.siswa.index', compact('siswas'));
     }
+
 
     /**
      * Store new Staff (Pembina/Pelatih).
@@ -283,7 +286,7 @@ class AdminController extends Controller
             return back()->with('error', 'Gagal mengimpor data: ' . $e->getMessage());
         }
     }
-    
+
     /**
      * Reset Siswa Password.
      */
@@ -292,7 +295,7 @@ class AdminController extends Controller
         $siswa->update([
             'password' => Hash::make('12345678')
         ]);
-    
+
         return back()->with('success', 'Password siswa ' . $siswa->nama . ' berhasil direset menjadi: 12345678');
     }
 
@@ -328,7 +331,7 @@ class AdminController extends Controller
     {
         return Excel::download(new StaffTemplateExport, 'template_staf.xlsx');
     }
-    
+
     /**
      * Reset Staff Password.
      */
@@ -342,11 +345,11 @@ class AdminController extends Controller
         } else {
             return back()->with('error', 'Role tidak valid.');
         }
-    
+
         $user->update([
             'password' => Hash::make('12345678')
         ]);
-    
+
         return back()->with('success', 'Password ' . $role . ' ' . $user->nama . ' berhasil direset menjadi: 12345678');
     }
 
@@ -470,6 +473,14 @@ class AdminController extends Controller
     /**
      * Show Journal Recap.
      */
+    public function siswaPesertaEkskulExport()
+    {
+        return Excel::download(new SiswaPesertaEkskulExport(), 'data_siswa_peserta_ekskul.xlsx');
+    }
+
+    /**
+     * Show Journal Recap.
+     */
     public function journalIndex(): View
     {
         $journals = Kegiatan::whereNotNull('materi')
@@ -482,7 +493,7 @@ class AdminController extends Controller
             ])
             ->latest('tanggal')
             ->get();
-            
+
         return view('admin.journal.index', compact('journals'));
     }
 }

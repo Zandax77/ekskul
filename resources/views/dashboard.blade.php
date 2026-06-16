@@ -118,7 +118,7 @@
                                         </svg>
                                         {{ $ekskul->jadwal }}
                                     </div>
-                                    
+
                                     @php
                                         $penilaian = $ekskul->penilaians->first();
                                     @endphp
@@ -295,7 +295,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="mt-8 pt-6 border-t border-white/10 space-y-3">
                         <a href="{{ route('password.edit') }}" class="flex items-center justify-between p-3 rounded-xl hover:bg-white/5 transition-colors group">
                             <span class="text-sm text-slate-300">Ganti Kata Sandi</span>

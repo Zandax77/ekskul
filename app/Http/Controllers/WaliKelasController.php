@@ -45,7 +45,7 @@ class WaliKelasController extends Controller
     public function dashboard()
     {
         $waliKelas = Auth::guard('wali_kelas')->user();
-        
+
         // Fetch students in the same class who follow at least one extracurricular
         $siswas = Siswa::where('kelas', $waliKelas->kelas)
             ->has('ekskuls')

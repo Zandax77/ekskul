@@ -39,7 +39,7 @@
                 <div class="bg-slate-900/50 border border-white/10 rounded-3xl p-6 hover:border-blue-500/50 transition-all group">
                     <h2 class="text-xl font-bold text-white mb-2">{{ $ekskul->nama }}</h2>
                     <p class="text-sm text-slate-400 mb-6">{{ $ekskul->siswas->count() }} Anggota Terdaftar</p>
-                    
+
                     <a href="{{ route('pelatih.ekskul.show', $ekskul) }}" class="inline-flex items-center justify-center w-full py-3 rounded-xl bg-blue-600 text-sm font-semibold text-white hover:bg-blue-500 transition-colors">
                         Kelola Latihan
                     </a>

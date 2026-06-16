@@ -21,7 +21,7 @@ class PembinaController extends Controller
     {
         $pembina = Auth::guard('pembina')->user();
         $ekskuls = $pembina->ekskuls;
-        
+
         return view('staff.pembina.dashboard', compact('ekskuls'));
     }
 
@@ -32,7 +32,7 @@ class PembinaController extends Controller
         }
 
         $ekskul->load(['kegiatans.presensis.siswa', 'siswas', 'prestasis.siswa']);
-        
+
         $monthlyAttendance = DB::table('presensis')
             ->join('kegiatans', 'presensis.kegiatan_id', '=', 'kegiatans.id')
             ->where('kegiatans.ekskul_id', $ekskul->id)
@@ -82,7 +82,7 @@ class PembinaController extends Controller
             // For optional ekskul, get only enrolled students
             $siswas = $ekskul->siswas()->orderBy('nama')->get();
         }
-            
+
         return view('staff.pembina.report', compact('ekskul', 'monthlyAttendance', 'absenteeRecap', 'absenteeDistribution', 'siswas'));
     }
 
@@ -114,7 +114,7 @@ class PembinaController extends Controller
         });
 
         $pdf = Pdf::loadView('reports.attendance', compact('ekskul', 'reportData'));
-        
+
         return $pdf->download('laporan_presensi_' . strtolower(str_replace(' ', '_', $ekskul->nama)) . '.pdf');
     }
 

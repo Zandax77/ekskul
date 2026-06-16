@@ -22,7 +22,7 @@ class PelatihController extends Controller
     {
         $pelatih = Auth::guard('pelatih')->user();
         $ekskuls = $pelatih->ekskuls;
-        
+
         return view('staff.pelatih.dashboard', compact('ekskuls'));
     }
 
@@ -35,12 +35,24 @@ class PelatihController extends Controller
 
         $ekskul->load(['kegiatans', 'siswas', 'prestasis.siswa']);
 
+        $driver = DB::connection()->getDriverName();
+
+        // SQLite doesn't support DATE_FORMAT(). Use strftime for sqlite, DATE_FORMAT for others.
+        $monthExpr = $driver === 'sqlite'
+            ? DB::raw('CAST(strftime("%m", tanggal) AS INTEGER) as month')
+            : DB::raw('MONTH(tanggal) as month');
+
+        $yearExpr = $driver === 'sqlite'
+            ? DB::raw('CAST(strftime("%Y", tanggal) AS INTEGER) as year')
+            : DB::raw('YEAR(tanggal) as year');
+
+
         $monthlyAttendance = DB::table('presensis')
             ->join('kegiatans', 'presensis.kegiatan_id', '=', 'kegiatans.id')
             ->where('kegiatans.ekskul_id', $ekskul->id)
             ->select(
-                DB::raw('DATE_FORMAT(tanggal, "%m") as month'),
-                DB::raw('DATE_FORMAT(tanggal, "%Y") as year'),
+                $monthExpr,
+                $yearExpr,
                 DB::raw('COUNT(*) as total_records'),
                 DB::raw('SUM(CASE WHEN status = "hadir" THEN 1 ELSE 0 END) as total_hadir')
             )
@@ -98,7 +110,7 @@ class PelatihController extends Controller
         }
 
         $ekskul = $kegiatan->ekskul;
-        
+
         if ($ekskul->is_wajib) {
             // For mandatory ekskul, get all students in the specified grades
             $grades = explode(',', $ekskul->wajib_kelas);
@@ -114,7 +126,7 @@ class PelatihController extends Controller
 
         $kegiatan->setRelation('siswas_list', $siswas);
         $kegiatan->load(['presensis']);
-        
+
         return view('staff.pelatih.presensi', compact('kegiatan', 'siswas'));
     }
 
@@ -186,7 +198,7 @@ class PelatihController extends Controller
         );
 
         return response()->json([
-            'success' => true, 
+            'success' => true,
             'message' => 'Kehadiran ' . $siswa->nama . ' berhasil dicatat',
             'siswa' => $siswa->nama
         ]);

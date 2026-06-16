@@ -18,11 +18,11 @@ Route::get('/', function () {
 // Fallback route untuk file storage (ketika symlink tidak tersedia di hosting)
 Route::get('/storage/{path}', function ($path) {
     $file = storage_path('app/public/' . $path);
-    
+
     if (!file_exists($file)) {
         abort(404);
     }
-    
+
     return response()->file($file);
 })->where('path', '.*')->name('storage.fallback');
 
@@ -49,25 +49,27 @@ Route::post('/wali-kelas/logout', [WaliKelasController::class, 'logout'])->name(
 // Admin Routes (using default web guard)
 Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
-    
+
     Route::get('/ekskul', [AdminController::class, 'ekskulIndex'])->name('ekskul.index');
     Route::post('/ekskul', [AdminController::class, 'ekskulStore'])->name('ekskul.store');
     Route::get('/ekskul/template', [AdminController::class, 'ekskulTemplate'])->name('ekskul.template');
     Route::post('/ekskul/import', [AdminController::class, 'ekskulImport'])->name('ekskul.import');
     Route::put('/ekskul/{ekskul}', [AdminController::class, 'ekskulUpdate'])->name('ekskul.update');
     Route::delete('/ekskul/{ekskul}', [AdminController::class, 'ekskulDestroy'])->name('ekskul.destroy');
-    
+
     Route::get('/staff', [AdminController::class, 'staffIndex'])->name('staff.index');
     Route::post('/staff', [AdminController::class, 'staffStore'])->name('staff.store');
     Route::get('/staff/template', [AdminController::class, 'staffTemplate'])->name('staff.template');
     Route::post('/staff/import', [AdminController::class, 'staffImport'])->name('staff.import');
     Route::post('/staff/{id}/reset', [AdminController::class, 'staffReset'])->name('staff.reset');
-    
+
     Route::get('/siswa', [AdminController::class, 'siswaIndex'])->name('siswa.index');
     Route::post('/siswa', [AdminController::class, 'siswaStore'])->name('siswa.store');
     Route::get('/siswa/template', [AdminController::class, 'siswaTemplate'])->name('siswa.template');
     Route::post('/siswa/import', [AdminController::class, 'siswaImport'])->name('siswa.import');
     Route::post('/siswa/{siswa}/reset', [AdminController::class, 'siswaReset'])->name('siswa.reset');
+    Route::get('/siswa/peserta-ekskul/export', [AdminController::class, 'siswaPesertaEkskulExport'])->name('siswa.peserta-ekskul.export');
+
 
     Route::get('/wali-kelas', [AdminController::class, 'waliKelasIndex'])->name('wali-kelas.index');
     Route::post('/wali-kelas', [AdminController::class, 'waliKelasStore'])->name('wali-kelas.store');
@@ -78,7 +80,7 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
 
     Route::get('/settings', [AdminController::class, 'settingsIndex'])->name('settings.index');
     Route::post('/settings', [AdminController::class, 'settingsUpdate'])->name('settings.store');
-    
+
     Route::get('/journals', [AdminController::class, 'journalIndex'])->name('journal.index');
 });
 
@@ -101,7 +103,7 @@ Route::middleware('auth:pelatih')->prefix('pelatih')->name('pelatih.')->group(fu
     Route::get('/kegiatan/{kegiatan}/scan', [PelatihController::class, 'scan'])->name('presensi.scan');
     Route::post('/kegiatan/{kegiatan}/scan', [PelatihController::class, 'processScan'])->name('presensi.processScan');
     Route::post('/ekskul/{ekskul}/prestasi', [PelatihController::class, 'storePrestasi'])->name('prestasi.store');
-    
+
     // Penilaian
     Route::get('/ekskul/{ekskul}/penilaian', [PelatihController::class, 'penilaian'])->name('penilaian');
     Route::post('/ekskul/{ekskul}/penilaian', [PelatihController::class, 'storePenilaian'])->name('penilaian.store');

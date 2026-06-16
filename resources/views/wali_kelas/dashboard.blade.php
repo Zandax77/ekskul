@@ -23,7 +23,7 @@
                         <p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Wali Kelas: {{ $waliKelas->nama }}</p>
                     </div>
                 </div>
-                
+
                 <form action="{{ route('wali_kelas.logout') }}" method="POST">
                     @csrf
                     <button type="submit" class="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white text-xs font-bold rounded-xl transition-all border border-white/10">

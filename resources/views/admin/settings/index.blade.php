@@ -24,7 +24,7 @@
         <div class="bg-slate-900/50 border border-white/10 rounded-3xl p-8 backdrop-blur-xl">
             <form action="{{ route('admin.settings.store') }}" method="POST" enctype="multipart/form-data" class="space-y-8">
                 @csrf
-                
+
                 <!-- Logo Sekolah -->
                 <div class="space-y-4">
                     <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">Logo Sekolah</label>

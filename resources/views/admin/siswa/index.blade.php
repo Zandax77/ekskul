@@ -7,7 +7,14 @@
     @include('admin.partials.nav')
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <h1 class="text-2xl font-bold text-white mb-8">Manajemen Siswa</h1>
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-8">
+            <h1 class="text-2xl font-bold text-white">Manajemen Siswa</h1>
+            <div class="flex items-center gap-3">
+                <button type="button" onclick="window.print()" class="px-4 py-2 text-[11px] bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-black/20">Cetak</button>
+                <a href="{{ route('admin.siswa.peserta-ekskul.export') }}" class="px-4 py-2 text-[11px] bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-blue-600/20">Ekspor Excel</a>
+            </div>
+        </div>
+
 
         @if(session('success'))
             <div class="mb-6 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl text-emerald-400 text-sm">
@@ -60,7 +67,7 @@
                     <form action="{{ route('admin.siswa.import') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
                         @csrf
                         <div class="relative group">
-                            <input type="file" name="file" required 
+                            <input type="file" name="file" required
                                 class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
                             <div class="bg-slate-800/50 border-2 border-dashed border-white/10 rounded-2xl p-6 text-center group-hover:border-blue-500/50 transition-all">
                                 <svg class="h-8 w-8 text-slate-500 mx-auto mb-2 group-hover:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -109,6 +116,81 @@
                 </tbody>
             </table>
         </div>
+
+        <div class="hidden" id="print-content">
+            <h2 class="text-lg font-bold">Rekap Data Siswa Peserta Ekskul</h2>
+            <table class="w-full text-left border-collapse text-xs mt-4">
+                <thead>
+                    <tr>
+                        <th class="border px-2 py-1">Nama</th>
+                        <th class="border px-2 py-1">NIS</th>
+                        <th class="border px-2 py-1">Kelas</th>
+                        <th class="border px-2 py-1">Ekskul yang diikuti</th>
+                        <th class="border px-2 py-1">Jumlah Ekskul</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($siswas as $s)
+                        <tr>
+                            <td class="border px-2 py-1">{{ $s->nama }}</td>
+                            <td class="border px-2 py-1">{{ $s->nis }}</td>
+                            <td class="border px-2 py-1">{{ $s->kelas ?? '-' }}</td>
+                            <td class="border px-2 py-1">{{ $s->ekskuls->pluck('nama')->filter()->implode(', ') }}</td>
+                            <td class="border px-2 py-1">{{ $s->ekskuls->count() }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+
+        <style>
+            @media print {
+                @page {
+                    size: A4;
+                    margin: 10mm;
+                }
+
+                body {
+                    -webkit-print-color-adjust: exact;
+                    print-color-adjust: exact;
+                }
+
+                /* sembunyikan konten lain */
+                body * {
+                    visibility: hidden;
+                }
+                #print-content, #print-content * {
+                    visibility: visible;
+                }
+
+                #print-content {
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                    width: 100%;
+                }
+
+                /* style tabel untuk A4 */
+                table {
+                    width: 100% !important;
+                    border-collapse: collapse !important;
+                }
+                th, td {
+                    border: 1px solid rgba(255,255,255,0.25) !important;
+                    padding: 6px 6px !important;
+                    font-size: 10.5px !important;
+                    word-break: break-word;
+                    vertical-align: top;
+                }
+                th {
+                    font-weight: 700 !important;
+                    background: rgba(255,255,255,0.06) !important;
+                }
+
+                .hidden { display: block !important; }
+            }
+        </style>
     </main>
 </div>
 @endsection
+
